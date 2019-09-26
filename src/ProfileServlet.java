@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class ProfileServlet extends javax.servlet.http.HttpServlet {
+    final String HTML = "<html>\n" +
+        "<form action=\"./logout\" method=\"GET\"\n" +
+        "<p>This is your profile</p>\n" +
+        "<br>\n" +
+        "<input name=\"logout\" type=\"submit\" value=\"Log out\"/>\n" +
+        "</form>\n" +
+        "</html>\n";
+
     protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         doPost(request,response);
     }
@@ -30,12 +38,6 @@ public class ProfileServlet extends javax.servlet.http.HttpServlet {
         }
 
         PrintWriter printWriter = response.getWriter();
-        printWriter.println("<html>");
-        printWriter.println("<form action=\"./logout\" method=\"GET\"");
-        printWriter.println("<p>This is your profile</p>");
-        printWriter.println("<br>");
-        printWriter.println("<input name=\"logout\" type=\"submit\" value=\"Log out\"/>");
-        printWriter.println("</form>");
-        printWriter.println("</html>");
+        printWriter.println(HTML);
     }
 }
