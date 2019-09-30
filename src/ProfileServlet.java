@@ -1,5 +1,3 @@
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,31 +11,76 @@ public class ProfileServlet extends javax.servlet.http.HttpServlet {
         "</html>\n";
 
     protected void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        doPost(request,response);
+        TableManager.tableGet(request, response);
+        PrintWriter pw = response.getWriter();
+        pw.println("<html>\n" +
+                "<head>\n" +
+                "    <title></title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "\n" +
+                "<table>\n" +
+                "    <tr>\n" +
+                "        <th scope=\"col\"> ID</th>\n" +
+                "        <th scope=\"col\"> Name</th>\n" +
+                "        <th scope=\"col\"></th>\n" +
+                "    </tr>");
+        for (Goods good : TableManager.goods) {
+            pw.println("<tr>\n" +
+                    "        <form action=\"./table\" method=\"post\">\n" +
+                    "            <td>\n" +
+                    good.getId() +
+                    "            </td>\n" +
+                    "            <td>\n" +
+                    "                <label for=\"" + good.getId() + "\">" + good.getProduct() + "</label>\n" +
+                    "            </td>\n" +
+                    "            <td>\n" +
+                    "                <input type=\"submit\" value=\"Add\" id=\" " + good.getId() + "\" name=\"" + good.getId() + "\"" + ">\n" +
+                    "            </td>\n" +
+                    "        </form>\n" +
+                    "    </tr>");
+        }
+        pw.println("</table>\n");
+        pw.println("<hr>\n" +
+                "<table>\n" +
+                "    <thead>\n" +
+                "    <tr>\n" +
+                "        <th colspan=\"4\">Your shopping</th>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "        <th>ID</th>\n" +
+                "        <th>Name</th>\n" +
+                "        <th>Quantity</th>\n" +
+                "        <th></th>\n"+
+                "    </tr>\n" +
+                "    </thead>");
+
+        for (Goods good : TableManager.goods) {
+            if (good.count > 0) {
+                pw.println("<tr>\n" +
+                        "       <form action=\"./table\" method=\"post\">\n" +
+                        "           <td>"+good.getId()+"</td>\n" +
+                        "            <td>\n" +
+                        "                <label for=\"" + good.getId() + "\">" + good.getProduct() + "</label>\n" +
+                        "            </td>\n" +
+                        "           <td>"+good.getCount()+"</td>\n" +
+                        "           <td><input type=\"submit\" value=\"Remove\" name=\""+good.getId()+"\"</td>"+
+                        "       </form>\n" +
+                        "    </tr>");
+            }
+        }
+        pw.println("</table>\n");
+
+        pw.println("</body>\n" +
+                "</html>");
+
+        pw.println(HTML);
     }
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        HttpSession httpSession;
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("username")) {
-                httpSession = request.getSession(true);
-                httpSession.setAttribute("name", cookie.getValue());
-            }
-        }
+        ServletManagaer.profile(request,response);
 
-        httpSession = request.getSession(false);
-        if (httpSession == null) {
-            response.sendRedirect("./login");
-        }
-
-        Object username = httpSession.getAttribute("name");
-        if (username == null) {
-            httpSession.invalidate();
-            response.sendRedirect("./login");
-            return;
-        }
-
-        PrintWriter printWriter = response.getWriter();
-        printWriter.println(HTML);
+        TableManager.tablePost(request, response);
+        doGet(request,response);
     }
 }
